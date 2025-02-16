@@ -51,5 +51,5 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
         child: Text('Now Playing Page'),
       ),
     );
-  }//tét
+  }
 }

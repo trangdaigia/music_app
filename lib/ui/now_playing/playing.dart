@@ -29,14 +29,24 @@ class NowPlayingPage extends StatefulWidget {
   State<NowPlayingPage> createState() => _NowPlayingPageState();
 }
 
-class _NowPlayingPageState extends State<NowPlayingPage> {
+class _NowPlayingPageState extends State<NowPlayingPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _imageAnimController;
+
+  @override
+  void initState() {
+    super.initState();
+    _imageAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 12),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   body: Center(
-    //     child: Text('Now Playing'),
-    //   ),
-    // );
+    final screenWidth = MediaQuery.of(context).size.width;
+    const delta = 64;
+    final radius = (screenWidth - delta) / 2;
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: const Text(
@@ -47,8 +57,88 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
           icon: const Icon(Icons.more_horiz),
         ),
       ),
-      child: const Center(
-        child: Text('Now Playing Page'),
+      child: Scaffold(
+        body: Center(
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text(widget.playingSong.album),
+            const SizedBox(
+              height: 16,
+            ),
+            const Text('_ ___ _'),
+            const SizedBox(
+              height: 48,
+            ),
+            RotationTransition(
+              turns: Tween(begin: 0.0, end: 1.0).animate(_imageAnimController),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(radius),
+                child: FadeInImage.assetNetwork(
+                  placeholder: 'assets/itune.jpg',
+                  image: widget.playingSong.image,
+                  width: screenWidth - delta,
+                  height: screenWidth - delta,
+                  imageErrorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      'assets/itune.jpg',
+                      width: screenWidth - delta,
+                      height: screenWidth - delta,
+                    );
+                  },
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 64, bottom: 16),
+              child: SizedBox(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.share_outlined),
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            widget.playingSong.title,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .color,
+                                ),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Text(
+                            widget.playingSong.artist,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .color,
+                                ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.favorite_outline),
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ]),
+              ),
+            )
+          ]),
+        ),
       ),
     );
   }
